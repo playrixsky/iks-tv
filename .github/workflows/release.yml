@@ -1,0 +1,26 @@
+name: Publish APK
+
+# apk/IKS-TV.apk badalne par GitHub release banti hai. Pakka download link:
+#   https://github.com/playrixsky/iks-tv/releases/latest/download/IKS-TV.apk
+on:
+  push:
+    branches: [main]
+    paths: ["apk/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          NAME=$(cat apk/VERSION_NAME)
+          gh release delete "v$NAME" --yes --cleanup-tag 2>/dev/null || true
+          gh release create "v$NAME" apk/IKS-TV.apk --latest --title "IKS TV $NAME" \
+            --notes "IKS TV for Android phones, Firestick and Android TV boxes — by IKS Renew. Install guide: https://iksrenew.com/iks-tv"
